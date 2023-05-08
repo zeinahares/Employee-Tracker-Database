@@ -38,6 +38,7 @@ const promptUser = () => {
                 'Add a Role',
                 'Add an Employee',
                 'Update an Employee Role',
+                "Update an Employee's Manager",
                 'Quit'
             ]
         }
@@ -68,9 +69,14 @@ const promptUser = () => {
             if (choice === 'Add an Employee') {
                 addEmployee();
             }
-            // if add employee role
 
+            if (choice === 'Update an Employee Role') {
+                updateEmployeeRole();
+            }
 
+            if (choice === "Update an Employee's Manager") {
+                updateEmployeeManager();
+            }
 
             if (choice === 'Quit') {
                 db.end();
@@ -211,49 +217,82 @@ function addEmployee() {
                 }
             ])
                 .then((response) => {
-               
+
                     const role_ID = roles.filter(function (element) {
                         if (element.name === response.roleName) {
                             return element.id
                         }
 
                     });
-                    
+
                     const manager_ID = managers.filter(function (element) {
                         if (element.name === response.managerName) {
                             return element.id
                         }
 
                     });
-                   
+
                     const query = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
                         VALUES ("${response.first_name}", "${response.last_name}", ${role_ID[0].id}, ${manager_ID[0].id})`;
                     db.query(query, function (err, results) { });
                 })
-            .then(() => promptUser());
+                .then(() => promptUser());
         });
     });
 };
-// XXX GIVEN a command-line application that accepts user input
-// XXX THEN I am presented with the following options:
-// XXX view all departments,
-// XXX view all roles,
-// XXX view all employees,
-// XXX add a department,
-// XXX add a role,
-// XXX add an employee, and
-// XXX update an employee role
-// XXX WHEN I choose to view all departments
-// XXX THEN I am presented with a formatted table showing department names and department ids
-// XXX WHEN I choose to view all roles
-// XXX THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
-// XXX WHEN I choose to view all employees
-// XXX THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
-// XXX WHEN I choose to add a department
-// XXX THEN I am prompted to enter the name of the department and that department is added to the database
-// XXX WHEN I choose to add a role
-// XXX THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
-// XXX WHEN I choose to add an employee
-// XXX THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
-// WHEN I choose to update an employee role
-// THEN I am prompted to select an employee to update and their new role and this information is updated in the database 
+
+function updateEmployeeRole() {
+
+    // select an employee to update and their new role and this information is updated in the database 
+    db.query("SELECT * FROM role", function (err, rolesIDArray) {
+        const roles = rolesIDArray.map(({ id, title }) => ({ name: title, id: id }));
+        db.query("SELECT * FROM employee", function (err, employeesIDArray) {
+
+            const employees = employeesIDArray.map(({ id, first_name, last_name }) => ({ name: first_name + " " + last_name, id: id }));
+            inquirer.prompt([
+              
+                {
+                    name: 'employeeName',
+                    type: 'list',
+                    message: 'Which employee do you want to change roles for?',
+                    choices: employees,
+                },
+                {
+                    name: 'roleName',
+                    type: 'list',
+                    message: 'What is the new role of the employee?',
+                    choices: roles,
+                }
+            ])
+                .then((response) => {
+
+                    const role_ID = roles.filter(function (element) {
+                        if (element.name === response.roleName) {
+                            return element.id
+                        }
+
+                    });
+
+                    const employee_ID = employees.filter(function (element) {
+                        if (element.name === response.employeeName) {
+                            return element.id
+                        }
+
+                    });
+
+                  
+
+                    const query = `UPDATE employee
+                    SET role_id = ${role_ID[0].id}
+                    WHERE id = ${employee_ID[0].id}`;
+
+                    db.query(query, function (err, results) {});
+                })
+                .then(() => promptUser());
+        });
+    });
+};
+
+function updateEmployeeManager() {
+
+};
