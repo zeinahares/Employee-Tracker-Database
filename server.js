@@ -14,10 +14,11 @@ const db = mysql.createConnection(
         password: 'boot2023',
         database: 'employees_db'
     },
-    console.log(`Connected to the employees_db database.`)
+    // console.log(`Connected to the employees_db database.`)
 );
 
 db.connect((error) => {
+    // figlet and chalk title
     if (error) throw error;
     promptUser();
 });
@@ -52,32 +53,51 @@ const promptUser = () => {
                 viewAllDepartments();
             }
 
+            if (choice === 'Quit') {
+                db.end();
+            }
+
         });
 }
 
 function viewAllEmployees() {
-
-
-}
-function viewAllRoles() {
-
-}
-function viewAllDepartments() {
-    db.query("SELECT id, name FROM department;", function (err, results) {
-
-        // format the output as an array of objects
-        // const formattedResults = results.map(result => {
-        //     return {
-        //         id: result.id,
-        //         name: result.name
-        //     };
-        // });
-// 
-        // const formattedResults = {};
-        // results.forEach(result => {
-        //     formattedResults[result.id] = result.name;
-        // });
-
+    const query = `SELECT  emp.id, emp.first_name, emp.last_name, 
+                    role.title, department.name AS department, role.salary,
+                    CONCAT(man.first_name, ' ', man.last_name) AS manager
+                    FROM employee emp
+                    INNER JOIN role
+                    ON role_id = role.id
+                    INNER JOIN department
+                    ON role.department_id = department.id
+                    LEFT JOIN employee man
+                    ON emp.manager_id = man.id`;
+    db.query(query, function (err, results) {
+        console.log(' ');
         console.table(results);
+        console.log(' ');
     });
+    promptUser();
+}
+
+function viewAllRoles() {
+    const query = `SELECT role.id, title, salary, department.name AS department 
+                    FROM role 
+                    JOIN department 
+                    ON role.department_id = department.id`;
+    db.query(query, function (err, results) {
+        console.log(' ');
+        console.table(results);
+        console.log(' ');
+    });
+    promptUser();
+}
+
+function viewAllDepartments() {
+    db.query("SELECT id, name FROM department", function (err, results) {
+        console.log(' ');
+        console.table(results);
+        console.log(' ');
+
+    });
+    promptUser();
 }
