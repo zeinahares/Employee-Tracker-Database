@@ -180,6 +180,59 @@ function addRole() {
 
 function addEmployee() {
 
+    db.query("SELECT * FROM role", function (err, rolesIDArray) {
+        const roles = rolesIDArray.map(({ id, title }) => ({ name: title, id: id }));
+        db.query("SELECT * FROM employee", function (err, managersIDArray) {
+
+            const managers = managersIDArray.map(({ id, first_name, last_name }) => ({ name: first_name + " " + last_name, id: id }));
+
+            inquirer.prompt([
+                {
+                    name: 'first_name',
+                    type: 'input',
+                    message: 'What is the first name of the employee?',
+                },
+                {
+                    name: 'last_name',
+                    type: 'input',
+                    message: 'What is the last name of the employee?',
+                },
+                {
+                    name: 'roleName',
+                    type: 'list',
+                    message: 'What is the role of the employee?',
+                    choices: roles,
+                },
+                {
+                    name: 'managerName',
+                    type: 'list',
+                    message: 'What is the role of the employee?',
+                    choices: managers,
+                }
+            ])
+                .then((response) => {
+               
+                    const role_ID = roles.filter(function (element) {
+                        if (element.name === response.roleName) {
+                            return element.id
+                        }
+
+                    });
+                    
+                    const manager_ID = managers.filter(function (element) {
+                        if (element.name === response.managerName) {
+                            return element.id
+                        }
+
+                    });
+                   
+                    const query = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
+                        VALUES ("${response.first_name}", "${response.last_name}", ${role_ID[0].id}, ${manager_ID[0].id})`;
+                    db.query(query, function (err, results) { });
+                })
+            .then(() => promptUser());
+        });
+    });
 };
 // XXX GIVEN a command-line application that accepts user input
 // XXX THEN I am presented with the following options:
@@ -200,7 +253,7 @@ function addEmployee() {
 // XXX THEN I am prompted to enter the name of the department and that department is added to the database
 // XXX WHEN I choose to add a role
 // XXX THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
-// WHEN I choose to add an employee
-// THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
+// XXX WHEN I choose to add an employee
+// XXX THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
 // WHEN I choose to update an employee role
 // THEN I am prompted to select an employee to update and their new role and this information is updated in the database 
