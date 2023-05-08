@@ -144,7 +144,9 @@ function addDepartment() {
         .then((response) => {
             const query = `INSERT INTO department (name)
                         VALUES ("${response.departmentName}")`;
-            db.query(query, function (err, results) { });
+            db.query(query, function (err, results) { 
+                // console.info(`Added ${response.departmentName} to database`);
+            });
         })
         .then(() => promptUser());
 };
@@ -176,7 +178,10 @@ function addRole() {
                 db.query(`SELECT id FROM department WHERE name = "${response.departmentName}"`, function (err, result) {
                     const query = `INSERT INTO role (title, salary, department_id)
                         VALUES ("${response.roleName}", ${response.roleSalary}, ${result[0].id})`;
-                    db.query(query, function (err, results) { });
+                    db.query(query, function (err, results) { 
+                        // console.log(" ");
+                        // console.log(`Added ${response.roleName} to database`);
+                    });
                 });
             })
             .then(() => promptUser());
@@ -191,6 +196,11 @@ function addEmployee() {
         db.query("SELECT * FROM employee", function (err, managersIDArray) {
 
             const managers = managersIDArray.map(({ id, first_name, last_name }) => ({ name: first_name + " " + last_name, id: id }));
+            const nullManager = {
+                name: "None",
+                id: null,
+            }
+            managers.push(nullManager);
 
             inquirer.prompt([
                 {
@@ -212,7 +222,7 @@ function addEmployee() {
                 {
                     name: 'managerName',
                     type: 'list',
-                    message: 'What is the role of the employee?',
+                    message: 'Who is the manager of the employee?',
                     choices: managers,
                 }
             ])
@@ -225,16 +235,26 @@ function addEmployee() {
 
                     });
 
-                    const manager_ID = managers.filter(function (element) {
-                        if (element.name === response.managerName) {
-                            return element.id
-                        }
+                    let query;
+                    if (response.managerName != 'None') {
+                        const manager_ID = managers.filter(function (element) {
+                            if (element.name === response.managerName) {
+                                return element.id
+                            }
+    
+                        });
 
-                    });
-
-                    const query = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
+                        query = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
                         VALUES ("${response.first_name}", "${response.last_name}", ${role_ID[0].id}, ${manager_ID[0].id})`;
-                    db.query(query, function (err, results) { });
+                    } else {
+                        query = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
+                        VALUES ("${response.first_name}", "${response.last_name}", ${role_ID[0].id}, NULL)`;
+                    }
+
+                    db.query(query, function (err, results) { 
+                        // console.log(" ");
+                        // console.log(`Added ${response.first_name} ${response.last_name} to database`);
+                    });
                 })
                 .then(() => promptUser());
         });
@@ -250,7 +270,7 @@ function updateEmployeeRole() {
 
             const employees = employeesIDArray.map(({ id, first_name, last_name }) => ({ name: first_name + " " + last_name, id: id }));
             inquirer.prompt([
-              
+
                 {
                     name: 'employeeName',
                     type: 'list',
@@ -280,13 +300,16 @@ function updateEmployeeRole() {
 
                     });
 
-                  
+
 
                     const query = `UPDATE employee
                     SET role_id = ${role_ID[0].id}
                     WHERE id = ${employee_ID[0].id}`;
 
-                    db.query(query, function (err, results) {});
+                    db.query(query, function (err, results) { 
+                        // console.log(" ");
+                        // console.log(`Updated ${response.employeeName} in the database`);
+                    });
                 })
                 .then(() => promptUser());
         });
@@ -294,5 +317,51 @@ function updateEmployeeRole() {
 };
 
 function updateEmployeeManager() {
+    db.query("SELECT * FROM employee", function (err, employeesIDArray) {
 
+        const employees = employeesIDArray.map(({ id, first_name, last_name }) => ({ name: first_name + " " + last_name, id: id }));
+        inquirer.prompt([
+
+            {
+                name: 'employeeName',
+                type: 'list',
+                message: 'Which employee do you want to change roles for?',
+                choices: employees,
+            },
+            {
+                name: 'managerName',
+                type: 'list',
+                message: 'Who is the new manager of the employee?',
+                choices: employees,
+            }
+        ])
+            .then((response) => {
+
+                const manager_ID = employees.filter(function (element) {
+                    if (element.name === response.managerName) {
+                        return element.id
+                    }
+
+                });
+
+                const employee_ID = employees.filter(function (element) {
+                    if (element.name === response.employeeName) {
+                        return element.id
+                    }
+
+                });
+
+
+
+                const query = `UPDATE employee
+                SET manager_id = ${manager_ID[0].id}
+                WHERE id = ${employee_ID[0].id}`;
+
+                db.query(query, function (err, results) { 
+                    // console.log(" ");
+                    // console.log(`Updated ${response.employeeName} in the database`);
+                });
+            })
+            .then(() => promptUser());
+    });
 };
