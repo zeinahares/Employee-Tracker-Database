@@ -17,6 +17,11 @@ const db = mysql.createConnection(
     console.log(`Connected to the employees_db database.`)
 );
 
+db.connect((error) => {
+    if (error) throw error;
+    promptUser();
+});
+
 // inquierer prompt
 const promptUser = () => {
     inquirer.prompt([
@@ -35,15 +40,15 @@ const promptUser = () => {
         .then((response) => {
             const choice = response.choices;
 
-            if (choices === 'View All Employees') {
+            if (choice === 'View All Employees') {
                 viewAllEmployees();
             }
 
-            if (choices === 'View All Roles') {
+            if (choice === 'View All Roles') {
                 viewAllRoles();
             }
 
-            if (choices === 'View All Departments') {
+            if (choice === 'View All Departments') {
                 viewAllDepartments();
             }
 
@@ -51,11 +56,28 @@ const promptUser = () => {
 }
 
 function viewAllEmployees() {
-    
+
+
 }
 function viewAllRoles() {
 
 }
 function viewAllDepartments() {
+    db.query("SELECT id, name FROM department;", function (err, results) {
 
+        // format the output as an array of objects
+        // const formattedResults = results.map(result => {
+        //     return {
+        //         id: result.id,
+        //         name: result.name
+        //     };
+        // });
+// 
+        // const formattedResults = {};
+        // results.forEach(result => {
+        //     formattedResults[result.id] = result.name;
+        // });
+
+        console.table(results);
+    });
 }
