@@ -29,13 +29,13 @@ const promptUser = () => {
         {
             name: 'choices',
             type: 'list',
-            message: 'Please select an option:',
+            message: 'What would you like to do?',
             choices: [
                 'View All Departments',
                 'View All Roles',
                 'View All Employees',
-                'Add a Department', 
-                'Add a Role', 
+                'Add a Department',
+                'Add a Role',
                 'Add an Employee',
                 'Update an Employee Role',
                 'Quit'
@@ -57,9 +57,17 @@ const promptUser = () => {
                 viewAllDepartments();
             }
 
-            // if add dep
-            // if add employ
-            // if add role
+            if (choice === 'Add a Department') {
+                addDepartment();
+            }
+
+            if (choice === 'Add a Role') {
+                addRole();
+            }
+
+            if (choice === 'Add an Employee') {
+                addEmployee();
+            }
             // if add employee role
 
 
@@ -119,15 +127,68 @@ function viewAllDepartments() {
     promptUser();
 }
 
+function addDepartment() {
+    inquirer.prompt([
+        {
+            name: 'departmentName',
+            type: 'input',
+            message: 'What is the name of the department?',
+        }
+    ])
+        .then((response) => {
+            const query = `INSERT INTO department (name)
+                        VALUES ("${response.departmentName}")`;
+            db.query(query, function (err, results) { });
+        })
+        .then(() => promptUser());
+};
 
+function addRole() {
+
+    db.query("SELECT name FROM department", function (err, results) {
+
+        inquirer.prompt([
+            {
+                name: 'roleName',
+                type: 'input',
+                message: 'What is the name of the role?',
+            },
+            {
+                name: 'roleSalary',
+                type: 'input',
+                message: 'What is the salary?',
+            },
+            {
+                name: 'departmentName',
+                type: 'list',
+                message: 'What is the department of the role?',
+                choices: results,
+            }
+        ])
+            .then((response) => {
+
+                db.query(`SELECT id FROM department WHERE name = "${response.departmentName}"`, function (err, result) {
+                    const query = `INSERT INTO role (title, salary, department_id)
+                        VALUES ("${response.roleName}", ${response.roleSalary}, ${result[0].id})`;
+                    db.query(query, function (err, results) { });
+                });
+            })
+            .then(() => promptUser());
+
+    });
+};
+
+function addEmployee() {
+
+};
 // XXX GIVEN a command-line application that accepts user input
-// XXX THEN I am presented with the following options: 
-// XXX view all departments, 
-// XXX view all roles, 
-// XXX view all employees, 
-// XXX add a department, 
-// XXX add a role, 
-// XXX add an employee, and 
+// XXX THEN I am presented with the following options:
+// XXX view all departments,
+// XXX view all roles,
+// XXX view all employees,
+// XXX add a department,
+// XXX add a role,
+// XXX add an employee, and
 // XXX update an employee role
 // XXX WHEN I choose to view all departments
 // XXX THEN I am presented with a formatted table showing department names and department ids
@@ -135,10 +196,10 @@ function viewAllDepartments() {
 // XXX THEN I am presented with the job title, role id, the department that role belongs to, and the salary for that role
 // XXX WHEN I choose to view all employees
 // XXX THEN I am presented with a formatted table showing employee data, including employee ids, first names, last names, job titles, departments, salaries, and managers that the employees report to
-// WHEN I choose to add a department
-// THEN I am prompted to enter the name of the department and that department is added to the database
-// WHEN I choose to add a role
-// THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
+// XXX WHEN I choose to add a department
+// XXX THEN I am prompted to enter the name of the department and that department is added to the database
+// XXX WHEN I choose to add a role
+// XXX THEN I am prompted to enter the name, salary, and department for the role and that role is added to the database
 // WHEN I choose to add an employee
 // THEN I am prompted to enter the employee’s first name, last name, role, and manager, and that employee is added to the database
 // WHEN I choose to update an employee role
