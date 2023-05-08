@@ -1,23 +1,61 @@
 const express = require('express');
+const mysql = require('mysql2');
+const inquirer = require('inquirer');
 
-const api = require('./routes/api/index.js');
-
-const PORT = process.env.PORT || 3001;
 const app = express();
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use('/api', api);
 
-
-
-app.use(express.static('public'));
-
-
-app.get('/', (req, res) =>
-    res.sendFile(path.join(__dirname, '/public/index.js'))
+const db = mysql.createConnection(
+    {
+        host: 'localhost',
+        user: 'root',
+        password: 'boot2023',
+        database: 'employees_db'
+    },
+    console.log(`Connected to the employees_db database.`)
 );
 
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+// inquierer prompt
+const promptUser = () => {
+    inquirer.prompt([
+        {
+            name: 'choices',
+            type: 'list',
+            message: 'Please select an option:',
+            choices: [
+                'View All Employees',
+                'View All Roles',
+                'View All Departments',
+                'Quit'
+            ]
+        }
+    ])
+        .then((response) => {
+            const choice = response.choices;
+
+            if (choices === 'View All Employees') {
+                viewAllEmployees();
+            }
+
+            if (choices === 'View All Roles') {
+                viewAllRoles();
+            }
+
+            if (choices === 'View All Departments') {
+                viewAllDepartments();
+            }
+
+        });
+}
+
+function viewAllEmployees() {
+    
+}
+function viewAllRoles() {
+
+}
+function viewAllDepartments() {
+
+}
