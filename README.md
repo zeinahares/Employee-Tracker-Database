@@ -22,6 +22,7 @@ You will need to have node js installed on your computer. You will also need a M
 Use your arrow keys to scroll and the enter key choose between the main menu options. There are 3 categories of choices of interacting with the database: Viewing, Adding, and updating. When you choose a viewing option, you will get a table of the relevant information, and then the main menu options will be presented to you again. If you select to Add or update information, you will need to follow the follwoing prompts to fill the relevant information (like inseritng department name when adding a department, or choosing an empolyee name from a list of empolyee names to update their manager details). 
 
 ## Walkthrough Video
+https://drive.google.com/file/d/1HuX0DKVLKbixqWVwC7C93AXBK9eY-CoC/view
 
 ## License
 MIT License https://opensource.org/licenses/MIT

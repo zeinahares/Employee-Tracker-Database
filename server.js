@@ -18,7 +18,9 @@ const db = mysql.createConnection(
 );
 
 db.connect((error) => {
-    // include title - !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    console.log("");
+    console.log("Employee Tracker");
+    console.log("");
     if (error) throw error;
     promptUser();
 });
