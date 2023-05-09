@@ -146,11 +146,11 @@ function addDepartment() {
         .then((response) => {
             const query = `INSERT INTO department (name)
                         VALUES ("${response.departmentName}")`;
-            db.query(query, function (err, results) { 
+            db.query(query, function (err, results) {
                 console.info(`Added ${response.departmentName} to database`);
+                promptUser();
             });
-        })
-        .then(() => promptUser());
+        });
 };
 
 function addRole() {
@@ -180,13 +180,12 @@ function addRole() {
                 db.query(`SELECT id FROM department WHERE name = "${response.departmentName}"`, function (err, result) {
                     const query = `INSERT INTO role (title, salary, department_id)
                         VALUES ("${response.roleName}", ${response.roleSalary}, ${result[0].id})`;
-                    db.query(query, function (err, results) { 
-                        // console.log(" ");
-                        // console.log(`Added ${response.roleName} to database`);
+                    db.query(query, function (err, results) {
+                        console.log(`Added ${response.roleName} to database`);
+                        promptUser()
                     });
                 });
-            })
-            .then(() => promptUser());
+            });
 
     });
 };
@@ -243,7 +242,7 @@ function addEmployee() {
                             if (element.name === response.managerName) {
                                 return element.id
                             }
-    
+
                         });
 
                         query = `INSERT INTO employee (first_name, last_name, role_id, manager_id)
@@ -253,12 +252,11 @@ function addEmployee() {
                         VALUES ("${response.first_name}", "${response.last_name}", ${role_ID[0].id}, NULL)`;
                     }
 
-                    db.query(query, function (err, results) { 
-                        // console.log(" ");
-                        // console.log(`Added ${response.first_name} ${response.last_name} to database`);
+                    db.query(query, function (err, results) {
+                        console.log(`Added ${response.first_name} ${response.last_name} to database`);
+                        promptUser()
                     });
-                })
-                .then(() => promptUser());
+                });
         });
     });
 };
@@ -308,12 +306,11 @@ function updateEmployeeRole() {
                     SET role_id = ${role_ID[0].id}
                     WHERE id = ${employee_ID[0].id}`;
 
-                    db.query(query, function (err, results) { 
-                        // console.log(" ");
-                        // console.log(`Updated ${response.employeeName} in the database`);
+                    db.query(query, function (err, results) {
+                        console.log(`Updated ${response.employeeName} in the database`);
+                        promptUser()
                     });
-                })
-                .then(() => promptUser());
+                });
         });
     });
 };
@@ -359,11 +356,10 @@ function updateEmployeeManager() {
                 SET manager_id = ${manager_ID[0].id}
                 WHERE id = ${employee_ID[0].id}`;
 
-                db.query(query, function (err, results) { 
-                    // console.log(" ");
-                    // console.log(`Updated ${response.employeeName} in the database`);
+                db.query(query, function (err, results) {
+                    console.log(`Updated ${response.employeeName} in the database`);
+                    promptUser();
                 });
-            })
-            .then(() => promptUser());
+            });
     });
 };
