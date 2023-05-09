@@ -98,8 +98,6 @@ function viewAllEmployees() {
                     ON emp.manager_id = man.id`;
     db.query(query, function (err, results) {
         console.log(' ');
-        console.log(' ');
-        console.log(' ');
         console.table(results);
         console.log(' ');
         promptUser();
@@ -114,8 +112,6 @@ function viewAllRoles() {
                     ON role.department_id = department.id`;
     db.query(query, function (err, results) {
         console.log(' ');
-        console.log(' ');
-        console.log(' ');
         console.table(results);
         console.log(' ');
         promptUser();
@@ -125,8 +121,6 @@ function viewAllRoles() {
 
 function viewAllDepartments() {
     db.query("SELECT id, name FROM department", function (err, results) {
-        console.log(' ');
-        console.log(' ');
         console.log(' ');
         console.table(results);
         console.log(' ');
@@ -300,8 +294,6 @@ function updateEmployeeRole() {
 
                     });
 
-
-
                     const query = `UPDATE employee
                     SET role_id = ${role_ID[0].id}
                     WHERE id = ${employee_ID[0].id}`;
@@ -324,7 +316,7 @@ function updateEmployeeManager() {
             {
                 name: 'employeeName',
                 type: 'list',
-                message: 'Which employee do you want to change roles for?',
+                message: 'Which employee do you want to change managers for?',
                 choices: employees,
             },
             {
