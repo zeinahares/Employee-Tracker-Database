@@ -102,8 +102,9 @@ function viewAllEmployees() {
         console.log(' ');
         console.table(results);
         console.log(' ');
+        promptUser();
     });
-    promptUser();
+
 }
 
 function viewAllRoles() {
@@ -117,8 +118,9 @@ function viewAllRoles() {
         console.log(' ');
         console.table(results);
         console.log(' ');
+        promptUser();
     });
-    promptUser();
+
 }
 
 function viewAllDepartments() {
@@ -128,9 +130,9 @@ function viewAllDepartments() {
         console.log(' ');
         console.table(results);
         console.log(' ');
-
+        promptUser();
     });
-    promptUser();
+
 }
 
 function addDepartment() {
@@ -145,7 +147,7 @@ function addDepartment() {
             const query = `INSERT INTO department (name)
                         VALUES ("${response.departmentName}")`;
             db.query(query, function (err, results) { 
-                // console.info(`Added ${response.departmentName} to database`);
+                console.info(`Added ${response.departmentName} to database`);
             });
         })
         .then(() => promptUser());
